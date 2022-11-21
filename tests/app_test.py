@@ -1,7 +1,7 @@
 import sys
 sys.path.append(r"C:\Users\immun\Desktop\school\year 3 semeseter1\ece444\ECE444-F2022-Lab6\project") 
-from app import init_db
 from app import app
+from app import db
 import pytest
 import os
 from pathlib import Path
@@ -12,13 +12,15 @@ TEST_DB = "test.db"
 
 @pytest.fixture
 def client():
-    BASE_DIR = Path(__file__).resolve().parent.parent
-    app.config["TESTING"] = True
-    app.config["DATABASE"] = BASE_DIR.joinpath(TEST_DB)
+    with app.app_context():
+        BASE_DIR = Path(__file__).resolve().parent.parent
+        app.config["TESTING"] = True
+        app.config["DATABASE"] = BASE_DIR.joinpath(TEST_DB)
+        app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{BASE_DIR.joinpath(TEST_DB)}"
 
-    init_db() # setup
-    yield app.test_client() # tests run here
-    init_db() # teardown
+        db.create_all()  # setup
+        yield app.test_client()  # tests run here
+        db.drop_all()  # teardown
 
 
 def login(client, username, password):
