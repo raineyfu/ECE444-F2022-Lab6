@@ -1,2 +1,7 @@
 env
 env/Lib/site-packages/setuptools/__pycache__/lib2to3_ex.cpython-38.pyc
+env
+*.pyc
+*.DS_Store
+__pycache__
+test.db
